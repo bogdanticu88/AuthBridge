@@ -1,15 +1,15 @@
-# 🔐 AuthBridge: Centralized Authentication Daemon for Penetration Testing
+# AuthBridge: Centralized Authentication Daemon for Penetration Testing
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat-square&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue?style=flat-square)](https://github.com/twister69/authbridge)
-[![Pentest Tool](https://img.shields.io/badge/Tool-Burp%20%7C%20Nuclei%20%7C%20sqlmap-orange?style=flat-square)](https://github.com/twister69/authbridge)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue?style=flat-square)](https://github.com/bogdanticu88/AuthBridge)
+[![Pentest Tool](https://img.shields.io/badge/Tool-Burp%20%7C%20Nuclei%20%7C%20sqlmap-orange?style=flat-square)](https://github.com/bogdanticu88/AuthBridge)
 
-**AuthBridge** is a lightweight, high-performance authentication daemon designed to centralize and automate credential management during security engagements. Stop manually extracting JWTs and refreshing OAuth2 tokens across multiple tools—AuthBridge handles the lifecycle, so you can focus on the exploit.
+**AuthBridge** is a lightweight, high-performance authentication daemon designed to centralize and automate credential management during security engagements. Stop manually extracting JWTs and refreshing OAuth2 tokens across multiple tools - AuthBridge handles the lifecycle, so you can focus on the exploit.
 
 ---
 
-## ⚡ The Problem: Credential Fatigue in Pentesting
+## The Problem: Credential Fatigue in Pentesting
 
 Modern web applications use complex, short-lived authentication (JWT, OAuth2, MFA). Pentesters typically spend **15-20% of their time** manually:
 - Extracting tokens from browser dev tools.
@@ -21,22 +21,22 @@ Modern web applications use complex, short-lived authentication (JWT, OAuth2, MF
 
 ---
 
-## 🛠️ Features & Capabilities
+## Features & Capabilities
 
 | Feature | Description | Support |
 | :--- | :--- | :--- |
-| **JWT Management** | Automatic parsing, validation, and expiry warnings. | ✅ |
-| **OAuth2 Lifecycle** | Background token refreshing using stored Refresh Tokens. | ✅ |
-| **Secure Storage** | AES-256-GCM encryption with OS-native keyring integration. | ✅ |
-| **Audit Trails** | Immutably log every credential fetch for compliance. | ✅ |
-| **Multi-Tool** | Native plugins for Burp Suite and Nuclei + REST API. | ✅ |
-| **Web GUI** | High-density dashboard for credential administration. | ✅ |
-| **Cloud Sync** | Securely push/pull encrypted vaults to S3 for teams. | ✅ |
-| **Hardening** | Optional API Key protection for Web GUI and REST API. | ✅ |
+| **JWT Management** | Automatic parsing, validation, and expiry warnings. | Yes |
+| **OAuth2 Lifecycle** | Background token refreshing using stored Refresh Tokens. | Yes |
+| **Secure Storage** | AES-256-GCM encryption with OS-native keyring integration. | Yes |
+| **Audit Trails** | Immutably log every credential fetch for compliance. | Yes |
+| **Multi-Tool** | Native plugins for Burp Suite and Nuclei + REST API. | Yes |
+| **Web GUI** | High-density dashboard for credential administration. | Yes |
+| **Cloud Sync** | Securely push/pull encrypted vaults to S3 for teams. | Yes |
+| **Hardening** | Optional API Key protection for Web GUI and REST API. | Yes |
 
 ---
 
-## 🏗️ Architecture & Data Flow
+## Architecture & Data Flow
 
 ```text
 authbridge/
@@ -59,13 +59,13 @@ authbridge/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Installation (From Source)
 ```bash
 # Clone and build
-git clone https://github.com/twister69/authbridge
-cd authbridge
+git clone https://github.com/bogdanticu88/AuthBridge
+cd AuthBridge
 go build -o authbridge ./main.go
 
 # (Optional) Move to path
@@ -86,7 +86,7 @@ curl -s http://localhost:9999/api/v1/token/internal-api | jq .token
 
 ---
 
-## 🔌 Integration Examples
+## Integration Examples
 
 ### Nuclei Integration
 Inject tokens directly into your templates using a variable:
@@ -101,7 +101,7 @@ nuclei -t template.yaml -u https://api.target.com -var token=$(curl -s http://lo
 
 ---
 
-## 🛡️ Security Model
+## Security Model
 
 - **Local Only:** Daemon binds to `127.0.0.1` by default.
 - **Hardening:** Start with `--api-key <secret>` to require authentication for all requests.
@@ -110,7 +110,7 @@ nuclei -t template.yaml -u https://api.target.com -var token=$(curl -s http://lo
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 - [ ] **Phase 5:** Cloud sync (Team Encrypted) via shared team key.
 - [ ] **Phase 6:** Proxy mode for tools that don't support custom headers.
@@ -118,6 +118,6 @@ nuclei -t template.yaml -u https://api.target.com -var token=$(curl -s http://lo
 
 ---
 
-## ⚖️ License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.

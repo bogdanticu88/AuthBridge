@@ -20,16 +20,10 @@ jobs:
           cache: true
 
       - name: Install Dependencies
-        run: |
-          cd authbridge
-          go mod download
+        run: go mod download
 
       - name: Build
-        run: |
-          cd authbridge
-          go build -v -o authbridge ./main.go
+        run: go build -v -o authbridge ./main.go
 
       - name: Test
-        run: |
-          cd authbridge
-          go test -v ./...
+        run: go test -v ./...
