@@ -2,9 +2,9 @@ package api
 
 import (
 	"embed"
-	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -85,8 +85,10 @@ func auditHandler(s store.Store) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		name := c.Query("name")
 		limitStr := c.DefaultQuery("limit", "50")
-		var limit int
-		fmt.Sscanf(limitStr, "%d", &limit)
+		limit, err := strconv.Atoi(limitStr)
+		if err != nil {
+			limit = 50
+		}
 
 		logs, err := s.ListAuditLogs(c.Request.Context(), name, limit)
 		if err != nil {

@@ -37,7 +37,7 @@ func (h *APIHandler) GetToken(c *gin.Context) {
 	
 	cred, err := h.store.GetCredential(c.Request.Context(), name)
 	if err != nil {
-		h.logAudit(c, "token_fetch", name, "failed", err.Error())
+		h.logAudit(c.ClientIP(), c.GetHeader("User-Agent"), "token_fetch", name, "failed", err.Error())
 		if err == store.ErrCredentialNotFound {
 			c.JSON(http.StatusNotFound, gin.H{"error": "credential_not_found"})
 			return
@@ -49,16 +49,18 @@ func (h *APIHandler) GetToken(c *gin.Context) {
 	handler := h.getHandler(cred.Type)
 	resp, err := handler.Authenticate(c.Request.Context(), cred)
 	if err != nil {
-		h.logAudit(c, "token_fetch", name, "failed", err.Error())
+		h.logAudit(c.ClientIP(), c.GetHeader("User-Agent"), "token_fetch", name, "failed", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Update last used and log audit in background
+	ip := c.ClientIP()
+	ua := c.GetHeader("User-Agent")
 	go func() {
 		ctx := context.Background()
 		h.store.UpdateLastUsed(ctx, name)
-		h.logAudit(c, "token_fetch", name, "success", "")
+		h.logAudit(ip, ua, "token_fetch", name, "success", "")
 	}()
 
 	c.JSON(http.StatusOK, resp)
@@ -123,7 +125,7 @@ func (h *APIHandler) AddCredential(c *gin.Context) {
 		return
 	}
 
-	h.logAudit(c, "credential_add", req.Name, "success", "")
+	h.logAudit(c.ClientIP(), c.GetHeader("User-Agent"), "credential_add", req.Name, "success", "")
 	c.JSON(http.StatusCreated, gin.H{"status": "created", "name": req.Name})
 }
 
@@ -134,7 +136,7 @@ func (h *APIHandler) DeleteCredential(c *gin.Context) {
 		return
 	}
 
-	h.logAudit(c, "credential_delete", name, "success", "")
+	h.logAudit(c.ClientIP(), c.GetHeader("User-Agent"), "credential_delete", name, "success", "")
 	c.Status(http.StatusNoContent)
 }
 
@@ -147,12 +149,12 @@ func (h *APIHandler) getHandler(credType string) auth.Handler {
 	return handler
 }
 
-func (h *APIHandler) logAudit(c *gin.Context, action, name, status, details string) {
+func (h *APIHandler) logAudit(ip, userAgent, action, name, status, details string) {
 	entry := &store.AuditLog{
 		Action:         action,
 		CredentialName: name,
-		SourceIP:       c.ClientIP(),
-		SourceTool:     c.GetHeader("User-Agent"),
+		SourceIP:       ip,
+		SourceTool:     userAgent,
 		Status:         status,
 		Details:        details,
 	}
