@@ -1,0 +1,24 @@
+# Binaries
+authbridge
+authbridge.exe
+*.exe
+*.deb
+
+# Database & Keys
+*.db
+*.db-wal
+*.db-shm
+master.key
+.authbridge/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+
+# Build Artifacts
+pkg_build/
+bin/
+dist/
+plugins/burp/build/
+plugins/burp/.gradle/

@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+}
+
+group 'com.authbridge'
+version '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'net.portswigger.burp.extensions:montoya-api:2024.1.1'
+    implementation 'com.google.code.gson:gson:2.10.1'
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

@@ -1,0 +1,20 @@
+id: authbridge-test
+info:
+  name: AuthBridge Token Injection Test
+  severity: info
+
+# Usage:
+# nuclei -t nuclei-integration.yaml -u https://api.example.com -var token=$(curl -s http://localhost:9999/api/v1/token/my-api | jq -r .token)
+
+requests:
+  - raw:
+      - |
+        GET /api/user/profile HTTP/1.1
+        Host: {{Hostname}}
+        Authorization: Bearer {{token}}
+        Connection: close
+
+    matchers:
+      - type: status
+        status:
+          - 200
