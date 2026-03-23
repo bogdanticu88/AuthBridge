@@ -30,8 +30,11 @@ func NewSQLiteStore(dbPath string) (*SQLiteStore, error) {
 	db.SetMaxIdleConns(5)
 	db.SetConnMaxLifetime(0)
 
+	s := &SQLiteStore{db: db}
+
 	// Create tables if they don't exist
-	if err := createSchema(db); err != nil {
+	if err := s.createSchema(); err != nil {
+		db.Close()
 		return nil, fmt.Errorf("failed to create schema: %w", err)
 	}
 
@@ -44,10 +47,10 @@ func NewSQLiteStore(dbPath string) (*SQLiteStore, error) {
 		log.Info().Str("journal_mode", journalMode).Msg("database initialized")
 	}
 
-	return &SQLiteStore{db: db}, nil
+	return s, nil
 }
 
-func createSchema(db *sql.DB) error {
+func (s *SQLiteStore) createSchema() error {
 	query := `
 	CREATE TABLE IF NOT EXISTS credentials (
 		id TEXT PRIMARY KEY,
@@ -70,7 +73,7 @@ func createSchema(db *sql.DB) error {
 		details TEXT
 	);
 	`
-	_, err := db.Exec(query)
+	_, err := s.db.Exec(query)
 	return err
 }
 
@@ -142,6 +145,9 @@ func (s *SQLiteStore) ListCredentials(ctx context.Context) ([]*Credential, error
 		}
 		results = append(results, &cred)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return results, nil
 }
 
@@ -192,6 +198,9 @@ func (s *SQLiteStore) ListAuditLogs(ctx context.Context, name string, limit int)
 			return nil, err
 		}
 		results = append(results, &log)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return results, nil
 }

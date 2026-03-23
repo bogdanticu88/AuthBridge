@@ -46,7 +46,10 @@ func getOrCreateMasterKey() ([]byte, error) {
 	// 1. Try OS keyring
 	keyStr, err := keyring.Get(serviceName, accountName)
 	if err == nil {
-		return hex.DecodeString(keyStr)
+		decoded, decodeErr := hex.DecodeString(keyStr)
+		if decodeErr == nil {
+			return decoded, nil
+		}
 	}
 
 	// 2. Fallback to file in ~/.authbridge
@@ -58,7 +61,10 @@ func getOrCreateMasterKey() ([]byte, error) {
 	if _, err := os.Stat(keyPath); err == nil {
 		data, err := os.ReadFile(keyPath)
 		if err == nil {
-			return hex.DecodeString(string(data))
+			decoded, decodeErr := hex.DecodeString(string(data))
+			if decodeErr == nil {
+				return decoded, nil
+			}
 		}
 	}
 
@@ -77,7 +83,9 @@ func getOrCreateMasterKey() ([]byte, error) {
 	} else {
 		log.Warn().Err(err).Msg("Failed to store key in OS keyring, falling back to file")
 		// Fallback to file
-		os.MkdirAll(filepath.Dir(keyPath), 0700)
+		if err := os.MkdirAll(filepath.Dir(keyPath), 0700); err != nil {
+			return nil, fmt.Errorf("failed to create directory for master key: %w", err)
+		}
 		if err := os.WriteFile(keyPath, []byte(keyHex), 0600); err != nil {
 			return nil, fmt.Errorf("failed to write master key to file: %w", err)
 		}

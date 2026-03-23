@@ -111,7 +111,10 @@ func (h *OAuth2Handler) refreshLocked(ctx context.Context, cred *store.Credentia
 	cred.Token = encryptedToken
 	if tokenResp.RefreshToken != "" {
 		meta.RefreshToken = tokenResp.RefreshToken
-		newMeta, _ := json.Marshal(meta)
+		newMeta, err := json.Marshal(meta)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal new metadata: %w", err)
+		}
 		cred.Metadata = string(newMeta)
 	}
 
