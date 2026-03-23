@@ -1,5 +1,20 @@
 # AuthBridge: Centralized Authentication Daemon for Penetration Testing
 
+```
+    ╔════════════════════════════════╗
+    ║                                ║
+    ║      A U T H B R I D G E       ║
+    ║   Credential Management Daemon ║
+    ║                                ║
+    ║   🔐  JWT  OAuth2  Kerberos   ║
+    ║   🔑  mTLS  Basic  Cookie     ║
+    ║                                ║
+    ╚════════════════════════════════╝
+         Burp Suite  |  Nuclei  |  API
+           ╱───────────────────╲
+        Connect your tools to one secure credential hub
+```
+
 [![Go Version](https://img.shields.io/badge/Go-1.25+-00ADD8?style=flat-square&logo=go)](https://go.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-blue?style=flat-square)](https://github.com/bogdanticu88/AuthBridge)
