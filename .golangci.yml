@@ -1,0 +1,25 @@
+run:
+  allow-parallel-runners: true
+  timeout: 5m
+
+linters-settings:
+  errcheck:
+    check-type-assertions: false
+    check-blank: false
+  golint:
+    min-confidence: 0.8
+  goimports:
+    local-prefixes: github.com/bogdanticu88/AuthBridge
+
+linters:
+  enable:
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+  disable:
+    - deadcode
+    - scopelint
