@@ -60,11 +60,14 @@ func getOrCreateMasterKey() ([]byte, error) {
 	keyPath := filepath.Join(home, ".authbridge", "master.key")
 	if _, err := os.Stat(keyPath); err == nil {
 		data, err := os.ReadFile(keyPath)
-		if err == nil {
+		if err != nil {
+			log.Warn().Err(err).Str("path", keyPath).Msg("failed to read master key from file")
+		} else {
 			decoded, decodeErr := hex.DecodeString(string(data))
 			if decodeErr == nil {
 				return decoded, nil
 			}
+			log.Warn().Err(decodeErr).Msg("failed to decode master key from file")
 		}
 	}
 

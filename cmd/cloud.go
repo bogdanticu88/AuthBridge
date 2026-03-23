@@ -25,7 +25,10 @@ var pushCmd = &cobra.Command{
 	Use:   "push",
 	Short: "Push encrypted vault to cloud",
 	Run: func(cmd *cobra.Command, args []string) {
-		home, _ := os.UserHomeDir()
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to get user home directory")
+		}
 		dbPath := filepath.Join(home, ".authbridge", "credentials.db")
 
 		client, err := sync.NewS3SyncClient(context.Background(), s3Bucket, s3Region)
@@ -46,7 +49,10 @@ var pullCmd = &cobra.Command{
 	Use:   "pull",
 	Short: "Pull encrypted vault from cloud",
 	Run: func(cmd *cobra.Command, args []string) {
-		home, _ := os.UserHomeDir()
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to get user home directory")
+		}
 		dbPath := filepath.Join(home, ".authbridge", "credentials.db")
 
 		client, err := sync.NewS3SyncClient(context.Background(), s3Bucket, s3Region)

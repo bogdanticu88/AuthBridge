@@ -16,7 +16,10 @@ var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all stored credentials",
 	Run: func(cmd *cobra.Command, args []string) {
-		home, _ := os.UserHomeDir()
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to get user home directory")
+		}
 		dbPath := filepath.Join(home, ".authbridge", "credentials.db")
 
 		s, err := store.NewSQLiteStore(dbPath)
@@ -40,7 +43,9 @@ var listCmd = &cobra.Command{
 			fmt.Fprintf(w, "%s\t%s\t%s\t%d\t%s\n",
 				c.Name, c.Type, c.CreatedAt.Format("2006-01-02 15:04:05"), c.UsageCount, lastUsed)
 		}
-		w.Flush()
+		if err := w.Flush(); err != nil {
+			log.Error().Err(err).Msg("failed to flush output")
+		}
 	},
 }
 

@@ -48,12 +48,24 @@ func TestFullLifecycle(t *testing.T) {
 		Handler: server.Handler,
 	}
 
+	errChan := make(chan error, 1)
 	go func() {
-		srv.ListenAndServe()
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			errChan <- err
+		}
 	}()
 	defer srv.Shutdown(context.Background())
 
-	time.Sleep(100 * time.Millisecond) // Wait for server
+	// Give server time to start up
+	time.Sleep(100 * time.Millisecond)
+
+	// Check for startup errors
+	select {
+	case err := <-errChan:
+		t.Fatalf("failed to start test server: %v", err)
+	default:
+		// Server started successfully
+	}
 
 	// 1. Add Credential via API
 	addReq := map[string]string{

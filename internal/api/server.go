@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog/log"
 	"github.com/bogdanticu88/AuthBridge/internal/store"
 )
 
@@ -19,7 +20,10 @@ func NewServer(addr string, s store.Store, e *store.EncryptionManager, apiKey st
 	router.Use(gin.Logger(), gin.Recovery())
 
 	// Set up embedded templates
-	templ := template.Must(template.ParseFS(webAssets, "web/index.html"))
+	templ, err := template.ParseFS(webAssets, "web/index.html")
+	if err != nil {
+		log.Fatal().Err(err).Msg("failed to parse web template")
+	}
 	router.SetHTMLTemplate(templ)
 
 	// Serve static files from embedded FS (Public)
@@ -87,6 +91,7 @@ func auditHandler(s store.Store) gin.HandlerFunc {
 		limitStr := c.DefaultQuery("limit", "50")
 		limit, err := strconv.Atoi(limitStr)
 		if err != nil {
+			log.Warn().Err(err).Str("limit", limitStr).Msg("invalid limit parameter, using default of 50")
 			limit = 50
 		}
 

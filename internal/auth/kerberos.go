@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/rs/zerolog/log"
 	"github.com/jcmturner/gokrb5/v8/client"
 	"github.com/jcmturner/gokrb5/v8/config"
 	"github.com/jcmturner/gokrb5/v8/keytab"
@@ -36,6 +37,7 @@ func (h *KerberosHandler) Authenticate(ctx context.Context, cred *store.Credenti
 	cfg, err := config.Load(meta.Krb5Conf)
 	if err != nil {
 		// Fallback to default if not provided
+		log.Warn().Err(err).Str("krb5_conf", meta.Krb5Conf).Msg("failed to load krb5.conf, using minimal config")
 		cfg = config.New()
 		cfg.LibDefaults.DefaultRealm = meta.Realm
 	}

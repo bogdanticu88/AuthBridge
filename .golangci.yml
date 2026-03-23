@@ -1,25 +1,103 @@
 run:
   allow-parallel-runners: true
   timeout: 5m
+  go: "1.25"
+  build-tags:
+    - ""
 
 linters-settings:
+  # Detect unclosed HTTP bodies and other resource leaks
+  bodyclose:
+    checks:
+      - default
+      - recovery
+
+  # Detect error handling issues
   errcheck:
-    check-type-assertions: false
-    check-blank: false
-  golint:
-    min-confidence: 0.8
+    check-type-assertions: true
+    check-blank: true
+    # Only report on direct ignores, not func calls returning (x, _)
+    disable-default-exclusions: false
+
+  # Unsafe pointer conversions
+  unsafeptr:
+    {} # Default settings
+
+  # Unconvert detects unnecessary type conversions
+  unconvert:
+    safe: false
+
+  # Context checks
+  contextcheck:
+    skip-analyzers:
+      - deepequalerrors
+
+  # Race condition detection
+  staticcheck:
+    checks:
+      - all
+      - "-SA1019"  # Excluding deprecated API warnings
+
+  # Check unused code
+  unused:
+    {}
+
+  # Import organization
   goimports:
     local-prefixes: github.com/bogdanticu88/AuthBridge
 
+  # Variable naming conventions
+  varnamelen:
+    max-distance: 10
+    min-name-length: 1
+
+  # Comment style checks
+  golint:
+    min-confidence: 0.8
+
+  # Forbidigo checks for forbidden patterns
+  forbidigo:
+    forbid:
+      - "^fmt\\.Print"  # Force using log/zerolog
+      - "^print$"
+      - "^println$"
+
+issues:
+  exclude-rules:
+    # Allow underscore imports
+    - source: "^import _"
+      linters: [blank-imports]
+
 linters:
+  enable-all: false
   enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
-    - staticcheck
-    - typecheck
-    - unused
+    # Essentials
+    - bodyclose        # Resource leak detection
+    - errcheck         # Unchecked errors
+    - gosimple         # Code simplifications
+    - govet            # Go vet issues
+    - ineffassign      # Useless assignments
+    - staticcheck      # Advanced static analysis
+    - typecheck        # Type checking
+    - unused           # Unused variables/functions
+    - unconvert        # Unnecessary type conversions
+    - unsafeptr        # Unsafe pointer conversions
+    - contextcheck     # Context usage validation
+
+    # Code quality
+    - goimports        # Import organization
+    - gofmt            # Code formatting
+    - misspell         # Spelling mistakes
+    - unparam          # Unused function parameters
+    - varnamelen       # Variable naming conventions
+
+    # Security
+    - gosec            # Security issues
+
   disable:
-    - deadcode
-    - scopelint
+    - deadcode         # Deprecated, use unused instead
+    - scopelint        # Deprecated, use exportloopref instead
+    - interfacer       # Deprecated
+    - maligned         # Deprecated
+    - golint           # Deprecated, use revive instead
+    - wsl              # Too strict

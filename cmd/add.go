@@ -23,9 +23,14 @@ var addCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add a new credential",
 	Run: func(cmd *cobra.Command, args []string) {
-		home, _ := os.UserHomeDir()
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to get user home directory")
+		}
 		baseDir := filepath.Join(home, ".authbridge")
-		os.MkdirAll(baseDir, 0700)
+		if err := os.MkdirAll(baseDir, 0700); err != nil {
+			log.Fatal().Err(err).Str("path", baseDir).Msg("failed to create base directory")
+		}
 		dbPath := filepath.Join(baseDir, "credentials.db")
 
 		s, err := store.NewSQLiteStore(dbPath)

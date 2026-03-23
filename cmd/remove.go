@@ -16,7 +16,10 @@ var removeCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
-		home, _ := os.UserHomeDir()
+		home, err := os.UserHomeDir()
+		if err != nil {
+			log.Fatal().Err(err).Msg("failed to get user home directory")
+		}
 		dbPath := filepath.Join(home, ".authbridge", "credentials.db")
 
 		s, err := store.NewSQLiteStore(dbPath)

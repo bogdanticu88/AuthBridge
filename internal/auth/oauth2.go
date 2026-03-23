@@ -131,6 +131,10 @@ func (h *OAuth2Handler) refreshLocked(ctx context.Context, cred *store.Credentia
 }
 
 func (h *OAuth2Handler) Validate(ctx context.Context, cred *store.Credential) (bool, error) {
+	// Acquire lock to ensure consistency with Authenticate/Refresh operations
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
 	jwtHandler := NewJWTHandler(h.encryption)
 	return jwtHandler.Validate(ctx, cred)
 }

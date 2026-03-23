@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 	"github.com/bogdanticu88/AuthBridge/internal/auth"
 	"github.com/bogdanticu88/AuthBridge/internal/store"
 )
@@ -14,7 +15,7 @@ import (
 type APIHandler struct {
 	store      store.Store
 	encryption *store.EncryptionManager
-	handlers   map[string]auth.Handler
+	handlers   map[string]auth.Handler // Initialized once, never modified - safe for concurrent reads
 }
 
 func NewAPIHandler(s store.Store, e *store.EncryptionManager) *APIHandler {
@@ -58,8 +59,13 @@ func (h *APIHandler) GetToken(c *gin.Context) {
 	ip := c.ClientIP()
 	ua := c.GetHeader("User-Agent")
 	go func() {
-		ctx := context.Background()
-		h.store.UpdateLastUsed(ctx, name)
+		// Use a context with timeout to prevent goroutine leaks
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := h.store.UpdateLastUsed(ctx, name); err != nil {
+			log.Error().Err(err).Str("name", name).Msg("failed to update last_used")
+		}
 		h.logAudit(ip, ua, "token_fetch", name, "success", "")
 	}()
 
@@ -158,8 +164,15 @@ func (h *APIHandler) logAudit(ip, userAgent, action, name, status, details strin
 		Status:         status,
 		Details:        details,
 	}
-	// We use a background context to not block the request
-	go h.store.AddAuditLog(context.Background(), entry)
+	// Log audit in background with timeout to prevent goroutine leaks
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		if err := h.store.AddAuditLog(ctx, entry); err != nil {
+			log.Error().Err(err).Str("action", action).Str("name", name).Msg("failed to add audit log")
+		}
+	}()
 }
 
 func (h *APIHandler) HealthCheck(c *gin.Context) {
