@@ -61,10 +61,12 @@ func TestFullLifecycle(t *testing.T) {
 		"type":  "jwt",
 		"token": "my-secret-jwt",
 	}
-	body, _ := json.Marshal(addReq)
+	body, err := json.Marshal(addReq)
+	assert.NoError(t, err)
 	resp, err := http.Post(fmt.Sprintf("http://%s/api/v1/credentials", actualAddr), "application/json", bytes.NewBuffer(body))
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusCreated, resp.StatusCode)
+	resp.Body.Close()
 
 	// 2. Fetch Token via API
 	resp, err = http.Get(fmt.Sprintf("http://%s/api/v1/token/api1", actualAddr))
@@ -72,7 +74,9 @@ func TestFullLifecycle(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var tokenResp map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&tokenResp)
+	err = json.NewDecoder(resp.Body).Decode(&tokenResp)
+	resp.Body.Close()
+	assert.NoError(t, err)
 	assert.Equal(t, "my-secret-jwt", tokenResp["token"])
 
 	// 3. List Credentials via API
@@ -81,7 +85,9 @@ func TestFullLifecycle(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	var listResp map[string]interface{}
-	json.NewDecoder(resp.Body).Decode(&listResp)
+	err = json.NewDecoder(resp.Body).Decode(&listResp)
+	resp.Body.Close()
+	assert.NoError(t, err)
 	creds := listResp["credentials"].([]interface{})
 	assert.Len(t, creds, 1)
 }
