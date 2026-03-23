@@ -7,8 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/twister69/authbridge/internal/auth"
-	"github.com/twister69/authbridge/internal/store"
+	"github.com/bogdanticu88/AuthBridge/internal/auth"
+	"github.com/bogdanticu88/AuthBridge/internal/store"
 )
 
 type APIHandler struct {

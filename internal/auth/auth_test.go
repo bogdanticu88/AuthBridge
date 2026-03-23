@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/stretchr/testify/assert"
-	"github.com/twister69/authbridge/internal/store"
+	"github.com/bogdanticu88/AuthBridge/internal/store"
 )
 
 func TestJWTHandler(t *testing.T) {

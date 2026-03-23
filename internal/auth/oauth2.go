@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/twister69/authbridge/internal/store"
+	"github.com/bogdanticu88/AuthBridge/internal/store"
 )
 
 type OAuth2Metadata struct {

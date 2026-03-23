@@ -14,8 +14,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/twister69/authbridge/internal/api"
-	"github.com/twister69/authbridge/internal/store"
+	"github.com/bogdanticu88/AuthBridge/internal/api"
+	"github.com/bogdanticu88/AuthBridge/internal/store"
 	"github.com/zalando/go-keyring"
 )
 

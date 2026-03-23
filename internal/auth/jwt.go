@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/twister69/authbridge/internal/store"
+	"github.com/bogdanticu88/AuthBridge/internal/store"
 )
 
 type JWTHandler struct {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"github.com/twister69/authbridge/internal/sync"
+	"github.com/bogdanticu88/AuthBridge/internal/sync"
 )
 
 var (

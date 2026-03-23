@@ -5,7 +5,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/twister69/authbridge/cmd"
+	"github.com/bogdanticu88/AuthBridge/cmd"
 )
 
 func main() {
